@@ -1,5 +1,5 @@
 /*
- * main.c
+ * adc.h
  *
  * Copyright (c) 2024 Thomas Buck (thomas@xythobuz.de)
  *
@@ -16,30 +16,9 @@
  * See <http://www.gnu.org/licenses/>.
  */
 
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <avr/wdt.h>
-#include <util/delay.h>
+#ifndef __ADC_H__
+#define __ADC_H__
 
-#include "adc.h"
-#include "usbdrv.h"
+void adcInit(void);
 
-int __attribute__((noreturn)) main(void) {
-    wdt_enable(WDTO_1S);
-    wdt_reset();
-
-    adcInit();
-    usbInit();
-
-    usbDeviceDisconnect(); // enforce re-enumeration, do this while interrupts are disabled!
-    wdt_reset();
-    _delay_ms(255); // fake USB disconnect for > 250 ms
-    usbDeviceConnect();
-
-    sei();
-
-    while (1) {
-        wdt_reset();
-        usbPoll();
-    }
-}
+#endif // __ADC_H__

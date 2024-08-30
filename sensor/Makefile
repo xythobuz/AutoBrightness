@@ -80,7 +80,7 @@ OBJDIR = build
 
 # List C source files here. (C dependencies are automatically generated.)
 SRC = v-usb/usbdrv/usbdrv.c v-usb/usbdrv/oddebug.c
-SRC += src/main.c
+SRC += src/main.c src/adc.c src/usb.c
 
 
 # List C++ source files here. (C dependencies are automatically generated.)

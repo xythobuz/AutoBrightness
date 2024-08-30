@@ -1,3 +1,6 @@
 [submodule "sensor/v-usb"]
 	path = sensor/v-usb
 	url = https://github.com/obdev/v-usb
+[submodule "sensor/micronucleus"]
+	path = sensor/micronucleus
+	url = https://github.com/micronucleus/micronucleus

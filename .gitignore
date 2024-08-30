@@ -1,4 +1,6 @@
 .directory
+.cache
 
 sensor/build
 sensor/sensor.*
+sensor/compile_commands.json

@@ -1,5 +1,5 @@
 /*
- * main.c
+ * usb.c
  *
  * Copyright (c) 2024 Thomas Buck (thomas@xythobuz.de)
  *
@@ -16,30 +16,8 @@
  * See <http://www.gnu.org/licenses/>.
  */
 
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <avr/wdt.h>
-#include <util/delay.h>
-
-#include "adc.h"
 #include "usbdrv.h"
 
-int __attribute__((noreturn)) main(void) {
-    wdt_enable(WDTO_1S);
-    wdt_reset();
-
-    adcInit();
-    usbInit();
-
-    usbDeviceDisconnect(); // enforce re-enumeration, do this while interrupts are disabled!
-    wdt_reset();
-    _delay_ms(255); // fake USB disconnect for > 250 ms
-    usbDeviceConnect();
-
-    sei();
-
-    while (1) {
-        wdt_reset();
-        usbPoll();
-    }
+usbMsgLen_t usbFunctionSetup(uchar data[8]) {
+    return 0;   /* default for not implemented requests: return no data back to host */
 }
