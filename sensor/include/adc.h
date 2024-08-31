@@ -22,6 +22,7 @@
 #include <stdint.h>
 
 void adcInit(void);
-uint32_t adcGet(void);
+uint16_t adcGet(void);
+uint16_t adcRaw(void);
 
 #endif // __ADC_H__

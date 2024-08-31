@@ -31,7 +31,7 @@ r = dev.ctrl_transfer(usb.util.CTRL_TYPE_VENDOR | usb.util.CTRL_IN, CUSTOM_RQ_RE
 print("reset-err", r)
 
 # value
-r = dev.ctrl_transfer(usb.util.CTRL_TYPE_VENDOR | usb.util.CTRL_IN, CUSTOM_RQ_GET, 0, 0, 4)
+r = dev.ctrl_transfer(usb.util.CTRL_TYPE_VENDOR | usb.util.CTRL_IN, CUSTOM_RQ_GET, 0, 0, 2)
 print("value", r)
 
 # reset ok

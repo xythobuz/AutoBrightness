@@ -22,17 +22,23 @@
 
 #include "adc.h"
 
-static uint32_t adc_value = 0;
+static int32_t adc_filter = 0;
+static uint16_t adc_prev = 0;
 
 void adcInit(void) {
     ADMUX = (1 << MUX0); // Vcc reference, ADC1 / PB2 in
     ADCSRA = (1 << ADEN) | (1 << ADIE) // adc and interrupt enabled
-            | (1 << ADPS2) | (1 << ADPS1) // prescaler 64
+            | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0) // prescaler 128
             | (1 << ADSC); // start first conversion
 }
 
 static inline void adcFilter(uint16_t val) {
-    adc_value = val; // TODO
+    adc_prev = val;
+
+    int32_t input = val;
+    input <<= 16; // 10bit val --> 26bit input
+
+    adc_filter = adc_filter + ((input - adc_filter) >> 5);
 }
 
 ISR(ADC_vect) {
@@ -43,10 +49,18 @@ ISR(ADC_vect) {
     ADCSRA |= (1 << ADSC);
 }
 
-uint32_t adcGet(void) {
-    uint32_t val;
+uint16_t adcGet(void) {
+    uint16_t val;
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-        val = adc_value;
+        val = (adc_filter >> 16) + ((adc_filter & 0x00008000) >> 15);
+    }
+    return val;
+}
+
+uint16_t adcRaw(void) {
+    uint16_t val;
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+        val = adc_prev;
     }
     return val;
 }
