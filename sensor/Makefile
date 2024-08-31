@@ -61,7 +61,7 @@ MCU = attiny85
 #         F_CPU = 16000000
 #         F_CPU = 18432000
 #         F_CPU = 20000000
-F_CPU = 16000000
+F_CPU = 16500000
 
 
 # Output format. (can be srec, ihex, binary)
@@ -114,7 +114,7 @@ DEBUG = dwarf-2
 #     Each directory must be seperated by a space.
 #     Use forward slashes for directory separators.
 #     For a directory that has spaces, enclose it in quotes.
-EXTRAINCDIRS = include v-usb/usbdrv
+EXTRAINCDIRS = include v-usb/usbdrv v-usb/libs-device
 
 
 # Compiler flag to set the C Standard level.

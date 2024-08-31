@@ -17,6 +17,7 @@
  */
 
 #include "usbdrv.h"
+#include "osccal.c" // missing usbdrv include, so include here
 
 usbMsgLen_t usbFunctionSetup(uchar data[8]) {
     return 0;   /* default for not implemented requests: return no data back to host */

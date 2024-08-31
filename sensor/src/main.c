@@ -28,6 +28,10 @@ int __attribute__((noreturn)) main(void) {
     wdt_enable(WDTO_1S);
     wdt_reset();
 
+    // status LED
+    DDRB |= (1 << DDB1); // output
+    PORTB |= (1 << PB1); // turn on
+
     adcInit();
     usbInit();
 
@@ -36,8 +40,10 @@ int __attribute__((noreturn)) main(void) {
     _delay_ms(255); // fake USB disconnect for > 250 ms
     usbDeviceConnect();
 
-    sei();
+    PORTB &= ~(1 << PB1); // turn status LED off
 
+    // enable interrupts and enter main loop for USB polling
+    sei();
     while (1) {
         wdt_reset();
         usbPoll();
