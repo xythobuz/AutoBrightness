@@ -23,6 +23,9 @@
 
 #include "adc.h"
 #include "usbdrv.h"
+#include "main.h"
+
+bool keep_feeding = true;
 
 int __attribute__((noreturn)) main(void) {
     wdt_enable(WDTO_1S);
@@ -45,7 +48,10 @@ int __attribute__((noreturn)) main(void) {
     // enable interrupts and enter main loop for USB polling
     sei();
     while (1) {
-        wdt_reset();
+        if (keep_feeding) {
+            wdt_reset();
+        }
+
         usbPoll();
     }
 }
