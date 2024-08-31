@@ -19,6 +19,9 @@
 #ifndef __ADC_H__
 #define __ADC_H__
 
+#include <stdint.h>
+
 void adcInit(void);
+uint32_t adcGet(void);
 
 #endif // __ADC_H__

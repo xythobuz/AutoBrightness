@@ -21,6 +21,7 @@
 #include "usbdrv.h"
 #include "osccal.c" // missing usbdrv include, so include here
 
+#include "adc.h"
 #include "main.h"
 
 #define CUSTOM_RQ_ECHO 0 // send back wValue and wIndex, for testing comms reliability
@@ -52,7 +53,7 @@ usbMsgLen_t usbFunctionSetup(uchar data[8]) {
         }
         return 1;
     } else if (rq->bRequest == CUSTOM_RQ_GET) {
-        uint32_t ldr_value = 23; // TODO
+        uint32_t ldr_value = adcGet();
         dataBuffer[0] = (ldr_value & 0x000000FF) >> 0;
         dataBuffer[1] = (ldr_value & 0x0000FF00) >> 8;
         dataBuffer[2] = (ldr_value & 0x00FF0000) >> 16;
