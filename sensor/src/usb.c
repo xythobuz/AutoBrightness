@@ -21,13 +21,12 @@
 #include "usbdrv.h"
 #include "osccal.c" // missing usbdrv include, so include here
 
-#include "adc.h"
+#include "lux.h"
 #include "main.h"
 
 #define CUSTOM_RQ_ECHO 0 // send back wValue and wIndex, for testing comms reliability
 #define CUSTOM_RQ_RESET 1 // reset to bootloader
 #define CUSTOM_RQ_GET 2 // get ldr value, filtered
-#define CUSTOM_RQ_RAW 3 // get raw ldr value
 
 usbMsgLen_t usbFunctionSetup(uchar data[8]) {
     usbRequest_t *rq = (void *)data;
@@ -53,13 +52,8 @@ usbMsgLen_t usbFunctionSetup(uchar data[8]) {
             dataBuffer[0] = 0; // error code
         }
         return 1;
-    } else if ((rq->bRequest == CUSTOM_RQ_GET) || (rq->bRequest == CUSTOM_RQ_RAW)) {
-        uint16_t ldr_value;
-        if (rq->bRequest == CUSTOM_RQ_GET) {
-            ldr_value = adcGet();
-        } else {
-            ldr_value = adcRaw();
-        }
+    } else if (rq->bRequest == CUSTOM_RQ_GET) {
+        uint16_t ldr_value = luxGet();
         dataBuffer[0] = (ldr_value & 0x00FF) >> 0;
         dataBuffer[1] = (ldr_value & 0xFF00) >> 8;
 

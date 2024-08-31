@@ -7,7 +7,6 @@ import time
 CUSTOM_RQ_ECHO = 0 # send back wValue and wIndex, for testing comms reliability
 CUSTOM_RQ_RESET = 1 # reset to bootloader
 CUSTOM_RQ_GET = 2 # get ldr value
-CUSTOM_RQ_RAW = 3 # get ldr value
 
 max_comm_retries = 5;
 
@@ -43,10 +42,4 @@ if read_val(CUSTOM_RQ_ECHO, 4, 42, 23) != (42 | (23 << 16)):
 while True:
     v = read_val(CUSTOM_RQ_GET, 2)
     print(time.time(), ";", v, flush=True)
-
-    #r = read_val(CUSTOM_RQ_RAW, 2)
-    #print(time.time(), ";", r, flush=True)
-
-    #print(time.time(), ";", v, ";", r, flush=True)
-
     time.sleep(0.25)

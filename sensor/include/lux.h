@@ -1,5 +1,5 @@
 /*
- * adc.h
+ * lux.h
  *
  * Copyright (c) 2024 Thomas Buck (thomas@xythobuz.de)
  *
@@ -16,13 +16,12 @@
  * See <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __ADC_H__
-#define __ADC_H__
+#ifndef __LUX_H__
+#define __LUX_H__
 
 #include <stdint.h>
 
-void adcInit(void);
-uint16_t adcGet(void);
-uint16_t adcRaw(void);
+void luxInit(void);
+uint16_t luxGet(void);
 
-#endif // __ADC_H__
+#endif // __LUX_H__

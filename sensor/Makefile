@@ -80,7 +80,8 @@ OBJDIR = build
 
 # List C source files here. (C dependencies are automatically generated.)
 SRC = v-usb/usbdrv/usbdrv.c v-usb/usbdrv/oddebug.c
-SRC += src/main.c src/adc.c src/usb.c
+SRC += extern/USI_TWI_Master.c
+SRC += src/main.c src/lux.c src/twi.c src/usb.c
 
 
 # List C++ source files here. (C dependencies are automatically generated.)
@@ -114,7 +115,7 @@ DEBUG = dwarf-2
 #     Each directory must be seperated by a space.
 #     Use forward slashes for directory separators.
 #     For a directory that has spaces, enclose it in quotes.
-EXTRAINCDIRS = include v-usb/usbdrv v-usb/libs-device
+EXTRAINCDIRS = include extern v-usb/usbdrv v-usb/libs-device
 
 
 # Compiler flag to set the C Standard level.
@@ -613,6 +614,7 @@ clean_list :
 # Create object files directory
 $(shell mkdir -p $(OBJDIR) 2>/dev/null)
 $(shell mkdir -p $(OBJDIR)/src 2>/dev/null) # TODO not nice
+$(shell mkdir -p $(OBJDIR)/extern 2>/dev/null) # TODO not nice
 $(shell mkdir -p $(OBJDIR)/v-usb/usbdrv 2>/dev/null) # TODO not nice
 
 

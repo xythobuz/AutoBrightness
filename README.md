@@ -7,7 +7,9 @@
 The firmware of this project is licensed as GPLv3.
 A copy of the license can be found in `COPYING`.
 
-It uses [V-USB](https://github.com/obdev/v-usb), and is based on their example code.
+It uses [V-USB](https://github.com/obdev/v-usb) and is based on their example code.
+
+Also includes the I2C Master implementation from the Atmel AVR310 AppNote.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

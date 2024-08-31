@@ -21,13 +21,15 @@
 #include <avr/wdt.h>
 #include <util/delay.h>
 
-#include "adc.h"
+#include "lux.h"
+#include "twi.h"
 #include "usbdrv.h"
 #include "main.h"
 
 bool keep_feeding = true;
 
-int __attribute__((noreturn)) main(void) {
+__attribute__((noreturn))
+int main(void) {
     wdt_enable(WDTO_1S);
     wdt_reset();
 
@@ -35,18 +37,24 @@ int __attribute__((noreturn)) main(void) {
     DDRB |= (1 << DDB1); // output
     PORTB |= (1 << PB1); // turn on
 
-    adcInit();
+    twiInit();
+    luxInit();
     usbInit();
 
     usbDeviceDisconnect(); // enforce re-enumeration, do this while interrupts are disabled!
+
     wdt_reset();
+    // TODO perform lux sensor init in this time
     _delay_ms(255); // fake USB disconnect for > 250 ms
+
     usbDeviceConnect();
 
     PORTB &= ~(1 << PB1); // turn status LED off
 
-    // enable interrupts and enter main loop for USB polling
+    // enable interrupts
     sei();
+
+    // enter main loop for USB polling
     while (1) {
         if (keep_feeding) {
             wdt_reset();
