@@ -21,7 +21,7 @@
 #include "twi.h"
 #include "lux.h"
 
-#define LUX_ADDR 0x5C
+#define LUX_ADDR 0x23 //0x5C
 
 #define OP_POWER_ON 0x01
 #define OP_RESET 0x07
@@ -36,7 +36,7 @@
 
 void luxInit(void) {
     twiWrite(LUX_ADDR, OP_POWER_ON);
-    twiWrite(LUX_ADDR, OP_CONT_1X);
+    twiWrite(LUX_ADDR, OP_CONT_0_5X);
 }
 
 uint16_t luxGet(void) {
