@@ -4,3 +4,4 @@
 sensor/build
 sensor/sensor.*
 sensor/compile_commands.json
+__pycache__

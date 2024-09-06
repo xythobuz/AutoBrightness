@@ -5,4 +5,4 @@
 # enter script directory
 cd "$(dirname "$0")"
 
-./fetch.py | ttyplot -t "Brightness"
+./lux.py | ttyplot -t "Brightness"
