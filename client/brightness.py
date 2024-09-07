@@ -6,8 +6,7 @@ import time
 
 filter_fact = 0.9
 
-# out = out_b + out_a * in_a * (in_b + in)
-c_in = 1.0, -40.0, # in_a, in_b
+c_in = 0.6, -60.0, # in_a, in_b
 calibration = {
     "HPN:HP 27xq:CNK1072BJY": [
         1.0, 30.0, # out_a, out_b
@@ -19,7 +18,8 @@ calibration = {
 }
 
 def cal(v, c):
-    return c[1] + c[0] * c_in[0] * (c_in[1] + v)
+    # out = out_b + out_a * in_a * max(0, in_b + in)
+    return c[1] + c[0] * c_in[0] * max(0, c_in[1] + v)
 
 def filter_lux(old, new):
     return (old * filter_fact) + (new * (1.0 - filter_fact))
@@ -45,7 +45,7 @@ if __name__ == "__main__":
         print("Display \"{}\" at {}".format(d["name"], d["prev"]))
 
     print()
-    print("Starting main loop")
+    print("{}: Starting main loop".format(time.ctime()))
     print()
 
     while True:
@@ -55,7 +55,7 @@ if __name__ == "__main__":
             val = lux_to_disp(d["name"], brightness)
             if val != d["prev"]:
                 d["prev"] = val
-                print("Setting \"{}\" to {}".format(d["name"], val))
+                print("{}: Setting \"{}\" to {}".format(time.ctime(), d["name"], val))
                 ddc.ddc_set(d["id"], val)
 
         time.sleep(1.0)

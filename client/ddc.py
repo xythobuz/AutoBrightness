@@ -5,7 +5,7 @@ import subprocess
 def ddc_detect():
     r = subprocess.run(["ddcutil", "detect", "-t"], capture_output=True)
     if r.returncode != 0:
-        raise ValueError("ddcutil returned {}".format(r.returncode))
+        raise ValueError("ddcutil returned {} \"{}\"".format(r.returncode))
 
     out = []
 
@@ -38,11 +38,11 @@ def ddc_detect():
 def ddc_get(dev):
     r = subprocess.run(["ddcutil", "-d", str(dev), "-t", "getvcp", "10"], capture_output=True)
     if r.returncode != 0:
-        raise ValueError("ddcutil returned {}".format(r.returncode))
+        raise ValueError("ddcutil returned {} \"{}\"".format(r.returncode, r.stderr.decode("utf-8")))
 
     s = r.stdout.decode("utf-8").split()
     if (s[0] != "VCP") or (s[1] != "10") or (s[2] != "C") or (s[4] != "100"):
-        raise ValueError("unexpected identifier")
+        raise ValueError("unexpected identifier \"{}\"".format(r.stdout.decode("utf-8")))
 
     return int(s[3])
 
@@ -53,7 +53,7 @@ def ddc_set(dev, val):
 
     r = subprocess.run(["ddcutil", "-d", str(dev), "-t", "setvcp", "10", str(val)], capture_output=True)
     if r.returncode != 0:
-        raise ValueError("ddcutil returned {}".format(r.returncode))
+        raise ValueError("ddcutil returned {} \"{}\"".format(r.returncode, r.stderr.decode("utf-8")))
 
 if __name__ == "__main__":
     devs = ddc_detect()
