@@ -17,26 +17,28 @@ def ddc_detect():
         if len(data) < 4:
             continue
 
-        # Display X
-        num = data[0].split()
-        if num[0] != "Display":
-            #raise ValueError("unexpected identifier (\"{}\" != \"Display\")".format(num[0]))
-            continue
-        field["id"] = num[1]
+        for d in data:
+            v = d.split()
+            if v[0] == "Display":
+                field["id"] = v[1]
+            elif (v[0] == "I2C") and (v[1] == "bus:"):
+                field["bus"] = v[2]
+            elif v[0] == "Monitor:":
+                field["name"] = ' '.join(v[1:])
 
-        # Monitor: name ...
-        name = data[3].split()
-        if name[0] != "Monitor:":
-            #raise ValueError("unexpected identifier (\"{}\" != \"Monitor:\")".format(name[0]))
-            continue
-        field["name"] = ' '.join(name[1:])
-
-        out.append(field)
+        # if id is not there it's an "Ivalid display"
+        if "id" in field:
+            out.append(field)
 
     return out
 
 def ddc_get(dev):
-    r = subprocess.run(["ddcutil", "-d", str(dev), "-t", "getvcp", "10"], capture_output=True)
+    if dev.startswith("/dev/i2c-"):
+        cmd = ["ddcutil", "--skip-ddc-checks", "--bus", dev.replace("/dev/i2c-", ""), "-t", "getvcp", "10"]
+    else:
+        cmd = ["ddcutil", "-d", str(dev), "-t", "getvcp", "10"]
+
+    r = subprocess.run(cmd, capture_output=True)
     if r.returncode != 0:
         raise ValueError("ddcutil returned {} \"{}\"".format(r.returncode, r.stderr.decode("utf-8")))
 
@@ -51,7 +53,12 @@ def ddc_set(dev, val):
     if (val < 0) or (val > 100):
         raise ValueError("out of range")
 
-    r = subprocess.run(["ddcutil", "-d", str(dev), "-t", "setvcp", "10", str(val)], capture_output=True)
+    if dev.startswith("/dev/i2c-"):
+        cmd = ["ddcutil", "--noverify", "--bus", dev.replace("/dev/i2c-", ""), "-t", "setvcp", "10", str(val)]
+    else:
+        cmd = ["ddcutil", "--noverify", "-d", str(dev), "-t", "setvcp", "10", str(val)]
+
+    r = subprocess.run(cmd, capture_output=True)
     if r.returncode != 0:
         raise ValueError("ddcutil returned {} \"{}\"".format(r.returncode, r.stderr.decode("utf-8")))
 

@@ -37,12 +37,22 @@ if __name__ == "__main__":
     lux.check_connection(usb)
 
     disps = ddc.ddc_detect()
-    brightness = lux.read_brightness(usb)
-    print("Brightness:", brightness)
+    if len(disps) <= 0:
+        raise ValueError("no displays found")
 
     for d in disps:
-        d["prev"] = ddc.ddc_get(d["id"])
-        print("Display \"{}\" at {}".format(d["name"], d["prev"]))
+        # select i2c bus if available, id otherwise
+        if "bus" in d:
+            d["_id"] = d["bus"]
+        else:
+            d["_id"] = d["id"]
+
+        # get initial value
+        d["prev"] = ddc.ddc_get(d["_id"])
+        print("Display \"{}\" ({}) at {}".format(d["name"], d["_id"], d["prev"]))
+
+    brightness = lux.read_brightness(usb)
+    print("Brightness:", brightness)
 
     print()
     print("{}: Starting main loop".format(time.ctime()))
@@ -56,6 +66,6 @@ if __name__ == "__main__":
             if val != d["prev"]:
                 d["prev"] = val
                 print("{}: Setting \"{}\" to {}".format(time.ctime(), d["name"], val))
-                ddc.ddc_set(d["id"], val)
+                ddc.ddc_set(d["_id"], val)
 
         time.sleep(1.0)
