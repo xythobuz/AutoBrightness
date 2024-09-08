@@ -3,17 +3,18 @@
 import lux
 import ddc
 import time
+import influx
 
 filter_fact = 0.9
 
-c_in = 0.6, -60.0, # in_a, in_b
+c_in = 0.6, -30.0, # in_a, in_b
 calibration = {
     "HPN:HP 27xq:CNK1072BJY": [
-        1.0, 30.0, # out_a, out_b
+        1.0, 10.0, # out_a, out_b
     ],
 
     "MSI:MSI G27CQ4:": [
-        1.0, 20.0, # out_a, out_b
+        1.0, 0.0, # out_a, out_b
     ],
 }
 
@@ -53,19 +54,47 @@ if __name__ == "__main__":
 
     brightness = lux.read_brightness(usb)
     print("Brightness:", brightness)
+    last_brightness = brightness
 
     print()
     print("{}: Starting main loop".format(time.ctime()))
     print()
 
+    time_brightness = time.time()
+    time_displays = time.time()
+
     while True:
+        # read brightness at approx. 1Hz with low-pass filtering
+        time.sleep(1.0)
         brightness = filter_lux(brightness, lux.read_brightness(usb))
 
-        for d in disps:
-            val = lux_to_disp(d["name"], brightness)
-            if val != d["prev"]:
-                d["prev"] = val
-                print("{}: Setting \"{}\" to {}".format(time.ctime(), d["name"], val))
-                ddc.ddc_set(d["_id"], val)
+        # print brightness changes at most every 5s
+        if (time.time() - time_brightness) > 5.0:
+            time_brightness = time.time()
 
-        time.sleep(1.0)
+            if int(brightness) != last_brightness:
+                last_brightness = int(brightness)
+                print("{}: Brightness: {}".format(time.ctime(), last_brightness))
+
+            try:
+                influx.write("brightness,location=pc-back", "lux", brightness)
+            except:
+                pass
+
+        # set displays at most every 10s
+        if (time.time() - time_displays) > 10.0:
+            time_displays = time.time()
+
+            for d in disps:
+                val = lux_to_disp(d["name"], brightness)
+                if val != d["prev"]:
+                    d["prev"] = val
+                    print("{}: Setting \"{}\" to {}".format(time.ctime(), d["name"], val))
+                    ddc.ddc_set(d["_id"], val)
+
+                    try:
+                        name = '_'.join(d["name"].split())
+                        influx.write("brightness,location=" + name, "backlight", val)
+                    except:
+                        pass
+
