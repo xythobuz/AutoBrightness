@@ -5,7 +5,7 @@ import ddc
 import time
 import influx
 
-filter_fact = 0.99
+filter_fact = 0.90
 
 c_in = 0.6, -30.0, # in_a, in_b
 calibration = {
@@ -98,3 +98,6 @@ if __name__ == "__main__":
                         d["prev"] = val
                     except Exception as e:
                         print(e)
+
+                        # set to zero to show display is disconnected
+                        d["prev"] = 0
