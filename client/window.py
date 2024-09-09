@@ -5,8 +5,10 @@ import subprocess
 from datetime import datetime
 import json
 
+max_comm_retries = 5
+
 # https://unix.stackexchange.com/a/776620
-def query(verbose=False):
+def query_internal(verbose=False):
     dir_path = os.path.abspath(os.path.dirname(__file__))
     file_path = os.path.join(dir_path, "kwin_check.js")
     datetime_now = datetime.now()
@@ -43,6 +45,14 @@ def query(verbose=False):
 
     msg = result.stdout.decode().rstrip().split("\n")[0][4:]
     return json.loads(msg)
+
+def query(verbose=False):
+    for attempts in range(0, max_comm_retries):
+        try:
+            return query_internal(verbose)
+        except Exception as e:
+            if attempts >= (max_comm_retries - 1):
+                raise e
 
 if __name__ == "__main__":
     info = query()

@@ -8,7 +8,7 @@ CUSTOM_RQ_ECHO = 0 # send back wValue and wIndex, for testing comms reliability
 CUSTOM_RQ_RESET = 1 # reset to bootloader
 CUSTOM_RQ_GET = 2 # get ldr value
 
-max_comm_retries = 5;
+max_comm_retries = 5
 
 def is_target_device(dev):
     if dev.manufacturer == "xythobuz.de" and dev.product == "AutoBrightness":
