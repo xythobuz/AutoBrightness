@@ -4,6 +4,7 @@ import lux
 import ddc
 import time
 import influx
+import window
 
 filter_fact = 0.90
 
@@ -62,6 +63,9 @@ if __name__ == "__main__":
 
     time_brightness = time.time()
     time_displays = time.time()
+    time_window = time.time()
+
+    is_active = True
 
     while True:
         # read brightness at approx. 1Hz with low-pass filtering
@@ -85,8 +89,18 @@ if __name__ == "__main__":
             except:
                 pass
 
+        # check for fullscreen windows every 20s
+        if (time.time() - time_window) > 20.0:
+            time_window = time.time()
+            info = window.query()
+            if info["fullscreen"] and is_active:
+                print("App \"{}\" is now fullscreen! Pausing.".format(info["name"]))
+            if (not info["fullscreen"]) and (not is_active):
+                print("No longer fullscreen. Continuing.")
+            is_active = not info["fullscreen"]
+
         # set displays at most every 10s
-        if (time.time() - time_displays) > 10.0:
+        if is_active and ((time.time() - time_displays) > 10.0):
             time_displays = time.time()
 
             for d in disps:

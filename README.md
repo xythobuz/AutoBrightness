@@ -31,6 +31,10 @@ Prepare udev rules for our new device.
 
 ## Client
 
+Uses [KWin scripting](https://develop.kde.org/docs/plasma/kwin/) to get the active window from the KDE window manager.
+This is used to pause adjustments while a fullscreen window is focused (eg. while gaming).
+Also sends status updates to a local InfluxDB.
+
 ### Quick Start
 
 Install dependency and run the client.
