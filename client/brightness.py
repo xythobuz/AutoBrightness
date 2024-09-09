@@ -5,7 +5,7 @@ import ddc
 import time
 import influx
 
-filter_fact = 0.9
+filter_fact = 0.99
 
 c_in = 0.6, -30.0, # in_a, in_b
 calibration = {
@@ -78,6 +78,10 @@ if __name__ == "__main__":
 
             try:
                 influx.write("brightness,location=pc-back", "lux", brightness)
+
+                for d in disps:
+                    name = '_'.join(d["name"].split())
+                    influx.write("brightness,location=" + name, "backlight", d["prev"])
             except:
                 pass
 
@@ -88,13 +92,9 @@ if __name__ == "__main__":
             for d in disps:
                 val = lux_to_disp(d["name"], brightness)
                 if val != d["prev"]:
-                    d["prev"] = val
-                    print("{}: Setting \"{}\" to {}".format(time.ctime(), d["name"], val))
-                    ddc.ddc_set(d["_id"], val)
-
                     try:
-                        name = '_'.join(d["name"].split())
-                        influx.write("brightness,location=" + name, "backlight", val)
-                    except:
-                        pass
-
+                        print("{}: Setting \"{}\" to {}".format(time.ctime(), d["name"], val))
+                        ddc.ddc_set(d["_id"], val)
+                        d["prev"] = val
+                    except Exception as e:
+                        print(e)
