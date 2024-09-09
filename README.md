@@ -1,6 +1,42 @@
 # AutoBrightness
 
+Simple solution to measure ambient room lighting conditions with an AtTiny85 based USB lux sensor and set external display backlight intensity accordingly via DDC/CI.
 
+See [this blog post for details](https://www.xythobuz.de/auto_brightness.html).
+
+## Sensor
+
+Uses a [Digispark Rev. 3 clone](https://www.az-delivery.de/en/products/digispark-board) with a [GY-302 BH1750 breakout board](https://www.az-delivery.de/en/products/gy-302-bh1750-lichtsensor-lichtstaerke-modul-fuer-arduino-und-raspberry-pi) connected to the I2C bus.
+
+[![Front of PCB](https://www.xythobuz.de/img/autobrightness_pcb_1_small.jpg)](https://www.xythobuz.de/img/autobrightness_pcb_1.jpg)
+[![Back of PCB](https://www.xythobuz.de/img/autobrightness_pcb_2_small.jpg)](https://www.xythobuz.de/img/autobrightness_pcb_2.jpg)
+
+### Quick Start
+
+Check out the repo and required submodules.
+
+    git clone https://git.xythobuz.de/thomas/AutoBrightness.git
+    cd AutoBrightness
+    git submodule update --init
+
+Build the firmware and upload it.
+
+    make -C sensor upload
+
+Prepare udev rules for our new device.
+
+    sudo cp sensor/49-autobrightness.rules /etc/udev/rules.d/49-autobrightness.rules
+    sudo udevadm control --reload-rules
+    sudo udevadm trigger
+
+## Client
+
+### Quick Start
+
+Install dependency and run the client.
+
+    yay -S python-pyusb
+    ./client/brightness.py
 
 ## License
 
