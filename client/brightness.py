@@ -24,7 +24,7 @@ def cal(v, c):
     return c[1] + c[0] * c_in[0] * max(0, c_in[1] + v)
 
 def filter_lux(old, new):
-    return (old * filter_fact) + (new * (1.0 - filter_fact))
+    return max(0.1, (old * filter_fact) + (new * (1.0 - filter_fact)))
 
 def lux_to_disp(name, val):
     if name in calibration:
@@ -93,10 +93,17 @@ if __name__ == "__main__":
         if (time.time() - time_window) > 20.0:
             time_window = time.time()
             info = window.query()
+
             if info["fullscreen"] and is_active:
-                print("App \"{}\" is now fullscreen! Pausing.".format(info["name"]))
+                print("{}: App \"{}\" is now fullscreen! Pausing.".format(time.ctime(), info["name"]))
+
             if (not info["fullscreen"]) and (not is_active):
-                print("No longer fullscreen. Continuing.")
+                print("{}: No longer fullscreen. Continuing.".format(time.ctime()))
+
+                # re-apply previous brightness values soon
+                for d in disps:
+                    d["prev"] = -1
+
             is_active = not info["fullscreen"]
 
         # set displays at most every 10s
@@ -114,4 +121,4 @@ if __name__ == "__main__":
                         print(e)
 
                         # set to zero to show display is disconnected
-                        d["prev"] = 0
+                        d["prev"] = -1

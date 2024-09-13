@@ -4,6 +4,7 @@ import os
 import subprocess
 from datetime import datetime
 import json
+import time
 
 max_comm_retries = 5
 
@@ -44,7 +45,11 @@ def query_internal(verbose=False):
         print("Errs 4", result.stderr.decode("utf-8"))
 
     msg = result.stdout.decode().rstrip().split("\n")[0][4:]
-    return json.loads(msg)
+    try:
+        return json.loads(msg)
+    except Exception as e:
+        print("Failed msg: \"{}\"".format(msg))
+        raise e
 
 def query(verbose=False):
     for attempts in range(0, max_comm_retries):
@@ -53,6 +58,8 @@ def query(verbose=False):
         except Exception as e:
             if attempts >= (max_comm_retries - 1):
                 raise e
+            else:
+                time.sleep(0.5)
 
 if __name__ == "__main__":
     info = query()
