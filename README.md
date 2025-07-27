@@ -35,9 +35,23 @@ Uses [KWin scripting](https://develop.kde.org/docs/plasma/kwin/) to get the acti
 This is used to pause adjustments while a fullscreen window is focused (eg. while gaming).
 Also sends status updates to a local InfluxDB.
 
+Run the command-line version with systemd automatically (modify paths in the commands and file accordingly):
+
+    mkdir -p ~/.config/systemd/user
+    ln -s /home/thomas/Projekte/AutoBrightness/client/autobrightness.service ~/.config/systemd/user
+    systemctl --user daemon-reload
+    systemctl --user enable --now autobrightness
+
+Or alternatively modify the paths in the `AutoBrightness.desktop` file and copy it to `~/.local/share/applications` for a graphical version that you can easily auto-start on boot in eg. the KDE settings menu.
+
 ### Quick Start
 
-Install dependency and run the client.
+Install dependencies and run the systray client:
+
+    yay -S python-pyusb python-pystray python-pillow python-cairosvg
+    ./client/tray.py
+
+Or for just the command-line version:
 
     yay -S python-pyusb
     ./client/brightness.py

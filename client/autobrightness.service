@@ -1,0 +1,16 @@
+[Unit]
+Description=Auto DDC/CI display brightness
+
+[Service]
+Type=exec
+WorkingDirectory=/home/thomas/Projekte/AutoBrightness
+ExecStart=/home/thomas/Projekte/AutoBrightness/client/brightness.py
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=fritzinfluxdb
+RemainAfterExit=no
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=default.target

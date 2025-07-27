@@ -2,9 +2,12 @@
 
 import lux
 import ddc
-import time
 import influx
 import window
+
+import time
+import sys
+import select
 
 filter_fact = 0.90
 
@@ -18,6 +21,10 @@ calibration = {
         1.0, 0.0, # out_a, out_b
     ],
 }
+
+running = True
+is_active = True
+last_brightness = 0
 
 def cal(v, c):
     # out = out_b + out_a * in_a * max(0, in_b + in)
@@ -34,14 +41,20 @@ def lux_to_disp(name, val):
     val = int(val)
     return min(max(val, 0), 100)
 
-if __name__ == "__main__":
+def main():
+    global running, is_active, last_brightness
+
+    print("usb init")
     usb = lux.usb_init()
+    print("check usb connection")
     lux.check_connection(usb)
 
+    print("detect displays")
     disps = ddc.ddc_detect()
     if len(disps) <= 0:
         raise ValueError("no displays found")
 
+    print("query displays")
     for d in disps:
         # select i2c bus if available, id otherwise
         if "bus" in d:
@@ -62,15 +75,24 @@ if __name__ == "__main__":
     print()
 
     time_brightness = time.time()
-    time_displays = time.time()
+    time_displays = time.time() - 8.0
     time_window = time.time()
 
     is_active = True
 
-    while True:
+    while running:
         # read brightness at approx. 1Hz with low-pass filtering
         time.sleep(1.0)
         brightness = filter_lux(brightness, lux.read_brightness(usb))
+
+        if select.select([sys.stdin, ], [], [], 0.0)[0]:
+            line = sys.stdin.readline()
+            print("Resetting displays")
+            for d in disps:
+                try:
+                    ddc.ddc_set(d["_id"], d["prev"])
+                except Exception as e:
+                    print(e)
 
         # print brightness changes at most every 5s
         if (time.time() - time_brightness) > 5.0:
@@ -122,3 +144,6 @@ if __name__ == "__main__":
 
                         # set to zero to show display is disconnected
                         d["prev"] = -1
+
+if __name__ == "__main__":
+    main()

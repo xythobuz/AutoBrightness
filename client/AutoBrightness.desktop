@@ -1,0 +1,17 @@
+[Desktop Entry]
+Comment[en_US]=
+Comment=
+Exec=/home/thomas/Projekte/AutoBrightness/client/tray.py
+GenericName[en_US]=
+GenericName=
+Icon=brightness-high
+MimeType=
+Name[en_US]=AutoBrightness
+Name=AutoBrightness
+Path=/home/thomas/Projekte/AutoBrightness/client/
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+X-KDE-SubstituteUID=false
+X-KDE-Username=
