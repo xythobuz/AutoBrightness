@@ -24,7 +24,9 @@ calibration = {
 
 running = True
 is_active = True
+is_unpaused = True
 last_brightness = 0
+disps = None
 
 def cal(v, c):
     # out = out_b + out_a * in_a * max(0, in_b + in)
@@ -42,7 +44,7 @@ def lux_to_disp(name, val):
     return min(max(val, 0), 100)
 
 def main():
-    global running, is_active, last_brightness
+    global running, is_active, is_unpaused, last_brightness, disps
 
     print("usb init")
     usb = lux.usb_init()
@@ -79,6 +81,7 @@ def main():
     time_window = time.time()
 
     is_active = True
+    is_unpaused = True
 
     while running:
         # read brightness at approx. 1Hz with low-pass filtering
@@ -129,7 +132,7 @@ def main():
             is_active = not info["fullscreen"]
 
         # set displays at most every 10s
-        if is_active and ((time.time() - time_displays) > 10.0):
+        if is_active and is_unpaused and ((time.time() - time_displays) > 10.0):
             time_displays = time.time()
 
             for d in disps:
