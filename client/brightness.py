@@ -27,6 +27,7 @@ is_active = True
 is_unpaused = True
 last_brightness = 0
 disps = None
+want_reset = False
 
 def cal(v, c):
     # out = out_b + out_a * in_a * max(0, in_b + in)
@@ -44,7 +45,7 @@ def lux_to_disp(name, val):
     return min(max(val, 0), 100)
 
 def main():
-    global running, is_active, is_unpaused, last_brightness, disps
+    global running, is_active, is_unpaused, last_brightness, disps, want_reset
 
     print("usb init")
     usb = lux.usb_init()
@@ -82,14 +83,18 @@ def main():
 
     is_active = True
     is_unpaused = True
+    want_reset = False
 
     while running:
         # read brightness at approx. 1Hz with low-pass filtering
         time.sleep(1.0)
         brightness = filter_lux(brightness, lux.read_brightness(usb))
 
-        if select.select([sys.stdin, ], [], [], 0.0)[0]:
-            line = sys.stdin.readline()
+        if (select.select([sys.stdin, ], [], [], 0.0)[0]) or want_reset:
+            if want_reset:
+                want_reset = False
+            else:
+                line = sys.stdin.readline()
             print("Resetting displays")
             for d in disps:
                 try:

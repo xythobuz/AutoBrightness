@@ -80,6 +80,9 @@ def display_menu():
 
     return display_entries
 
+def do_reset():
+    brightness.want_reset = True
+
 def main():
     out = BytesIO()
     cairosvg.svg2png(url=icon_path, write_to=out)
@@ -113,6 +116,10 @@ def main():
                 lambda icon=pystray.Icon: is_paused_name(),
                 lambda icon=pystray.Icon: toggle_pause(),
                 checked=lambda icon=pystray.Icon: is_paused_checked(),
+            ),
+            pystray.MenuItem(
+                "Reset",
+                lambda icon=pystray.Icon: do_reset(),
             ),
             pystray.MenuItem(
                 "Quit",
