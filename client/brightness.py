@@ -11,7 +11,7 @@ import select
 
 filter_fact = 0.90
 
-c_in = 0.6, -30.0, # in_a, in_b
+c_in = [ 0.6, -30.0 ] # in_a, in_b
 calibration = {
     "HPN:HP 27xq:CNK1072BJY": [
         1.0, 10.0, # out_a, out_b
@@ -40,7 +40,8 @@ def lux_to_disp(name, val):
     if name in calibration:
         val = cal(int(val), calibration[name])
     else:
-        raise ValueError("no calibration for \"{}\"".format(name))
+        #raise ValueError("no calibration for \"{}\"".format(name))
+        val = cal(int(val), [1.0, 0.0]) # default when no calibration
     val = int(val)
     return min(max(val, 0), 100)
 

@@ -26,7 +26,7 @@ def ddc_detect():
             elif v[0] == "Monitor:":
                 field["name"] = ' '.join(v[1:])
 
-        # if id is not there it's an "Ivalid display"
+        # if id is not there it's an "Invalid display"
         if "id" in field:
             out.append(field)
 

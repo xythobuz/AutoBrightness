@@ -44,7 +44,8 @@ def query_internal(verbose=False):
     if verbose and result.stderr:
         print("Errs 4", result.stderr.decode("utf-8"))
 
-    msg = result.stdout.decode().rstrip().split("\n")[0][4:]
+    msg = result.stdout.decode().rstrip().split("\n")[0]
+    #print(msg)
     try:
         return json.loads(msg)
     except Exception as e:
