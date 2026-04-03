@@ -9,6 +9,12 @@ import time
 import sys
 import select
 
+import paho.mqtt.publish as publish
+
+MQTT_HOST = "MQTT_HOST_HERE"
+MQTT_USER = "MQTT_USERNAME_HERE"
+MQTT_PASS = "MQTT_PASSWORD_HERE"
+
 filter_fact = 0.90
 
 c_in = [ 0.6, -30.0 ] # in_a, in_b
@@ -103,13 +109,35 @@ def main():
                 except Exception as e:
                     print(e)
 
-        # print brightness changes at most every 5s
-        if (time.time() - time_brightness) > 5.0:
+        # print/store/transmit brightness changes at most every 30s
+        if (time.time() - time_brightness) > 30.0:
             time_brightness = time.time()
 
             if int(brightness) != last_brightness:
                 last_brightness = int(brightness)
                 print("{}: Brightness: {}".format(time.ctime(), last_brightness))
+
+            msgs = [{
+                'topic': "livingroom/brightness/lux",
+                'payload': str(brightness),
+                'qos': 0,
+                'retain': True,
+            }]
+            for d in disps:
+                name = '_'.join(d["name"].split())
+                msgs.append({
+                    'topic': f"livingroom/brightness/{name}",
+                    'payload': str(d["prev"]),
+                    'qos': 0,
+                    'retain': True,
+                })
+            try:
+                publish.multiple(msgs, hostname=MQTT_HOST, client_id="AutoBrightness", auth={
+                    'username': MQTT_USER,
+                    'password': MQTT_PASS,
+                })
+            except:
+                pass
 
             try:
                 influx.write("brightness,location=pc-back", "lux", brightness)
